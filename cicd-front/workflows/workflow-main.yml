@@ -1,0 +1,27 @@
+name: Github Action Workflow MAIN
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types:
+      - build-main
+  workflow_dispatch:
+
+concurrency:
+  group: environment-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-main:
+    uses: ehornos/pruebaFE/.github/workflows/s3-deploy.yml@main
+    with:
+      CI_ENV: main
+      CONTENTFUL_ENVIRONMENT: 'main'
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_MAIN }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_MAIN }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      S3_ORIGIN_BUCKET: ${{ secrets.S3_ORIGIN_BUCKET_MAIN }}
