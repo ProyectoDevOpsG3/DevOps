@@ -40,13 +40,18 @@ resource "aws_s3_bucket_public_access_block" "public_acces_bucket_dev" {
   block_public_policy     = false
 }
 
-
+resource "aws_s3_bucket_website_configuration" "website_s3_bucket_dev_g3" {
+  bucket = aws_s3_bucket.s3_bucket_dev_g3.id
+  index_document {
+    suffix = "index.html"
+  }
+}
 
 resource "aws_s3_bucket_policy" "error_data_dev" {
   bucket = aws_s3_bucket.s3_bucket_dev_g3.id
   policy = data.aws_iam_policy_document.error_policy_dev.json
+  depends_on = [ aws_s3_bucket_public_access_block.public_acces_bucket_dev ]
 }
-
 
 
 
@@ -70,20 +75,15 @@ data "aws_iam_policy_document" "error_policy_dev" {
 
 }
 
-resource "aws_s3_bucket_website_configuration" "website_s3_bucket_dev_g3" {
-  bucket = aws_s3_bucket.s3_bucket_dev_g3.id
-  index_document {
-    suffix = "index.html"
-  }
-}
+
 
 //--------- MAIN ----------
 
 
 resource "aws_s3_bucket" "s3_bucket_main_g3" {
-  bucket = "m-bucket-g3"
+  bucket = "main-bucket-g3"
   tags = {
-    Name        = "m-bucket-g3"
+    Name        = "main-bucket-g3"
     Environment = "main"
   }
 }
@@ -96,11 +96,17 @@ resource "aws_s3_bucket_public_access_block" "public_acces_bucket_main" {
   block_public_policy     = false
 }
 
-
+resource "aws_s3_bucket_website_configuration" "website_s3_bucket_main_g3" {
+  bucket = aws_s3_bucket.s3_bucket_main_g3.id
+  index_document {
+    suffix = "index.html"
+  }
+}
 
 resource "aws_s3_bucket_policy" "error_data_main" {
   bucket = aws_s3_bucket.s3_bucket_main_g3.id
   policy = data.aws_iam_policy_document.error_policy_main.json
+  depends_on = [ aws_s3_bucket_public_access_block.public_acces_bucket_main ]
 }
 
 
@@ -118,24 +124,19 @@ data "aws_iam_policy_document" "error_policy_main" {
           "s3:GetObject"
           ]
         resources  = [
-          "arn:aws:s3:::m-bucket-g3/*"
+          "arn:aws:s3:::main-bucket-g3/*"
           ]
       }
 
 }
 
-resource "aws_s3_bucket_website_configuration" "website_s3_bucket_main_g3" {
-  bucket = aws_s3_bucket.s3_bucket_main_g3.id
-  index_document {
-    suffix = "index.html"
-  }
-}
+
 
 //------- TEST ---------------------
 resource "aws_s3_bucket" "s3_bucket_test_g3" {
-  bucket = "t-bucket-g3"
+  bucket = "test-bucket-g3"
   tags = {
-    Name        = "t-bucket-g3"
+    Name        = "test-bucket-g3"
     Environment = "test"
   }
 }
@@ -148,11 +149,18 @@ resource "aws_s3_bucket_public_access_block" "public_acces_bucket_test" {
   block_public_policy     = false
 }
 
+resource "aws_s3_bucket_website_configuration" "website_s3_bucket_test_g3" {
+  bucket = aws_s3_bucket.s3_bucket_test_g3.id
+  index_document {
+    suffix = "index.html"
+  }
+}
 
 
 resource "aws_s3_bucket_policy" "error_data_test" {
   bucket = aws_s3_bucket.s3_bucket_test_g3.id
   policy = data.aws_iam_policy_document.error_policy_test.json
+  depends_on = [ aws_s3_bucket_public_access_block.public_acces_bucket_test ]
 }
 
 
@@ -172,15 +180,9 @@ data "aws_iam_policy_document" "error_policy_test" {
           "s3:GetObject"
           ]
         resources  = [
-          "arn:aws:s3:::t-bucket-g3/*"
+          "arn:aws:s3:::test-bucket-g3/*"
           ]
       }
 
 }
 
-resource "aws_s3_bucket_website_configuration" "website_s3_bucket_test_g3" {
-  bucket = aws_s3_bucket.s3_bucket_test_g3.id
-  index_document {
-    suffix = "index.html"
-  }
-}
