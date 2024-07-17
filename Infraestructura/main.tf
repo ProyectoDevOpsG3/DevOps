@@ -9,19 +9,14 @@ terraform {
   }
 }
 
-
 # Provider Block
 provider "aws" {
   region  = "us-east-1"
   profile = "default" 
 }
-
-
-
-
-
-
 # Create S3 Bucket Resource
+
+//--------- DEV ----------
 
 
 resource "aws_s3_bucket" "s3_bucket_dev_g3" {
@@ -31,7 +26,6 @@ resource "aws_s3_bucket" "s3_bucket_dev_g3" {
     Environment = "dev"
   }
 }
-
 
 resource "aws_s3_bucket_public_access_block" "public_acces_bucket_dev" {
   bucket = aws_s3_bucket.s3_bucket_dev_g3.id
@@ -53,8 +47,6 @@ resource "aws_s3_bucket_policy" "error_data_dev" {
   depends_on = [ aws_s3_bucket_public_access_block.public_acces_bucket_dev ]
 }
 
-
-
 data "aws_iam_policy_document" "error_policy_dev" {
   
     statement {
@@ -75,10 +67,7 @@ data "aws_iam_policy_document" "error_policy_dev" {
 
 }
 
-
-
 //--------- MAIN ----------
-
 
 resource "aws_s3_bucket" "s3_bucket_main_g3" {
   bucket = "main-bucket-g3"
@@ -130,9 +119,8 @@ data "aws_iam_policy_document" "error_policy_main" {
 
 }
 
-
-
 //------- TEST ---------------------
+
 resource "aws_s3_bucket" "s3_bucket_test_g3" {
   bucket = "test-bucket-g3"
   tags = {
@@ -163,9 +151,6 @@ resource "aws_s3_bucket_policy" "error_data_test" {
   depends_on = [ aws_s3_bucket_public_access_block.public_acces_bucket_test ]
 }
 
-
-
-
 data "aws_iam_policy_document" "error_policy_test" {
   
     statement {
@@ -186,3 +171,15 @@ data "aws_iam_policy_document" "error_policy_test" {
 
 }
 
+//--------- ECR ----------
+
+resource "aws_ecr_repository" "orders-service-example" {
+  count = 4
+  name = "ecr-${var.micro[count.index]}"
+
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
